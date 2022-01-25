@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Finpro] Database System - JKT48</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="../dist/Chart.min.js"></script>
+	<script src="../utils.js"></script>
+	<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+<body>
+    <!-- =============================================navigation bar============================================= -->
+    <div id="head">
+        <p id="name">JKT48</p>
+        <div id="navigation">
+            <span id="links">
+				<a href="#" target="">Menu Utama</a>
+				<a href="schedule.php" target="">Jadwal</a>
+				<a href="../index.html" target="">keluar</a>
+			</span>
+        </div>
+        <div id="line"></div>
+    </div>
+    <!-- =============================================graphic 1============================================= -->
+    <div id="top">
+        <h1><span>2020 - Semua Setlist</span><h1>
+        <div style="width: 99%; background-color: #fff;">
+            <canvas id="canvas"></canvas>
+        </div>
+        <br>
+        <br>
+        <div style="width: 99%; background-color: #fff;">
+            <canvas id="canvas2"></canvas>
+        </div>
+    </div>
+    <!-- =============================================footer section============================================= -->
+    <div id="footer">
+        <hr>
+        <p>CREATE WITH ❤ BY <a href="">HAFIZHMO</a></p>
+        <img src="../assets/indo.png">
+    </div>
+    <script>
+		var MONTHS = ["January", "Febuary", "March", "April", "May", "June", "July"];
+		var TOTAL1 = [];
+		var TOTAL2 = [];
+		var TOTAL3 = [];
+		var TOTAL4 = [];
+		var ajax1 = new XMLHttpRequest();
+		ajax1.open("GET", "../conn/graph-line.php?id=SL001", true);
+		ajax1.send();
+
+		ajax1.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				var data = JSON.parse(this.responseText);
+				console.log(data);
+
+				for (var i = 0; i < data.length; i++) {
+					TOTAL1.push(data[i].Total);
+					
+				}
+			}
+		}
+
+		var ajax2 = new XMLHttpRequest();
+		ajax2.open("GET", "../conn/graph-line.php?id=SL002", true);
+		ajax2.send();
+
+		ajax2.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				var data = JSON.parse(this.responseText);
+				console.log(data);
+
+				for (var i = 0; i < data.length; i++) {
+					TOTAL2.push(data[i].Total);
+					
+				}
+			}
+		}
+
+		var ajax3 = new XMLHttpRequest();
+		ajax3.open("GET", "../conn/graph-line.php?id=SL003", true);
+		ajax3.send();
+
+		ajax3.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				var data = JSON.parse(this.responseText);
+				console.log(data);
+
+				for (var i = 0; i < data.length; i++) {
+					TOTAL3.push(data[i].Total);
+					
+				}
+			}
+		}
+
+		var ajax4 = new XMLHttpRequest();
+		ajax4.open("GET", "../conn/graph-line.php?id=SL004", true);
+		ajax4.send();
+
+		ajax4.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				var data = JSON.parse(this.responseText);
+				console.log(data);
+
+				for (var i = 0; i < data.length; i++) {
+					TOTAL4.push(data[i].Total);
+					
+				}
+			}
+		}
+
+		var config = {
+			type: 'line',
+			data: {
+				labels: MONTHS,
+				datasets: [{
+					label: 'Fajar Sang Idola',
+					backgroundColor: window.chartColors.red,
+					borderColor: window.chartColors.red,
+					data: TOTAL1,
+					fill: false,
+				}, {
+					label: 'Back Hip Circle',
+					fill: false,
+					backgroundColor: window.chartColors.green,
+					borderColor: window.chartColors.green,
+					data: TOTAL2,
+				},{
+					label: 'Fly Team T',
+					fill: false,
+					backgroundColor: window.chartColors.blue,
+					borderColor: window.chartColors.blue,
+					data: TOTAL3,
+				},{
+					label: 'Pajama Drive',
+					fill: false,
+					backgroundColor: window.chartColors.yellow,
+					borderColor: window.chartColors.yellow,
+					data: TOTAL4,
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Perkembangan Penjualan Tiket'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+                },
+                elements: {
+				line: {
+					tension: 0.000001
+				}
+			},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Value'
+						}
+					}]
+				}
+			}
+		};
+
+		var SETLIST = [];
+		var SETLIST_TOTAL = [];
+		var ajax5 = new XMLHttpRequest();
+		ajax5.open("GET", "../conn/graph-block.php", true);
+		ajax5.send();
+
+		ajax5.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				var data = JSON.parse(this.responseText);
+				console.log(data);
+
+				for (var i = 0; i < data.length; i++) {
+					SETLIST.push(data[i].Name);
+					SETLIST_TOTAL.push(data[i].Total);
+					
+				}
+			}
+		}
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+            window.myLine = new Chart(ctx, config);
+            
+            var ctx2 = document.getElementById('canvas2').getContext('2d');
+			window.myHorizontalBar = new Chart(ctx2, {
+				type: 'horizontalBar',
+				data: {
+                    labels: ['2020'],
+				datasets: [{
+					label: SETLIST[0],
+					backgroundColor: window.chartColors.red,
+					borderColor: window.chartColors.red,
+					data: [SETLIST_TOTAL[0]],
+					fill: false,
+				}, {
+					label: SETLIST[1],
+					fill: false,
+					backgroundColor: window.chartColors.green,
+					borderColor: window.chartColors.green,
+					data: SETLIST_TOTAL[1],
+				},{
+					label: SETLIST[2],
+					fill: false,
+					backgroundColor: window.chartColors.blue,
+					borderColor: window.chartColors.blue,
+					data: SETLIST_TOTAL[2],
+                },{
+					label: SETLIST[3],
+					fill: false,
+					backgroundColor: window.chartColors.yellow,
+					borderColor: window.chartColors.yellow,
+					data: SETLIST_TOTAL[3],
+                }]
+                },
+				options: {
+					// Elements options apply to all of the options unless overridden in a dataset
+					// In this case, we are setting the border of each horizontal bar to be 2px wide
+					elements: {
+						rectangle: {
+							borderWidth: 2,
+						}
+					},
+					responsive: true,
+					legend: {
+						position: 'right',
+					},
+					title: {
+						display: true,
+						text: 'Total Penjualan Tiket'
+                    },
+                    scales: {
+					xAxes: [{
+						ticks: {
+							min: 0,
+							max: 100
+						}
+					}]
+				}
+				}
+			});
+        };
+	</script>
+</body>
+</html>
